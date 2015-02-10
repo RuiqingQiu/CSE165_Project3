@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour {
 	public HandController hand;
 	// Use this for initialization
 	void Start () {
-		Debug.Log(Load("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
+		Debug.Log(Load("/Users/margaretwm3/Desktop/CSE165_Project3/Assets/test1.txt"));
 		//After loading the file, add gate based on the point is at
 		for(int i = 0; i < center_points.Count; i++){
 			Vector3 up = up_vector[i];
