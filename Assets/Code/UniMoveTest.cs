@@ -38,6 +38,7 @@ public class UniMoveTest : MonoBehaviour
 {
 	// This is the (3d object prototype in the scene)
 	private GameObject moveControllerPrefab;
+	public GameObject spaceship;
 
 	// We save a list of Move controllers.
 	private List<UniMoveController> moves = new List<UniMoveController>();
@@ -150,6 +151,7 @@ public class UniMoveTest : MonoBehaviour
 			// Set the rumble based on how much the trigger is down
 			move.SetRumble(move.Trigger);
 			moveObj.gameObject.transform.localRotation = move.Orientation;
+			spaceship.transform.localRotation = move.Orientation;
 			i++;
 		}
 	}
