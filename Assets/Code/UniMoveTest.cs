@@ -39,11 +39,18 @@ public class UniMoveTest : MonoBehaviour
 	// This is the (3d object prototype in the scene)
 	private GameObject moveControllerPrefab;
 	public GameObject spaceship;
+	public GameObject game_scene;
+	public GameObject menu_scene;
 
 	// We save a list of Move controllers.
-	private List<UniMoveController> moves = new List<UniMoveController>();
+	public static List<UniMoveController> moves = new List<UniMoveController>();
 	// This is a list of graphical representations of move controllers (3d object)
-	private List<MoveController> moveObjs = new List<MoveController>();
+	public static List<MoveController> moveObjs = new List<MoveController>();
+	private float time = 0.0f;
+	private float speed = 100.0f;
+	private float direction = 1.0f;
+	//Indicating if there's a menu
+	private bool menu = false;
 
 
 	void Start()
@@ -116,6 +123,7 @@ public class UniMoveTest : MonoBehaviour
 	void Update()
 	{
 		int i = 0;
+		time += Time.deltaTime;
 		foreach(UniMoveController move in moves)
 		{
 
@@ -132,28 +140,74 @@ public class UniMoveTest : MonoBehaviour
 			if (move.GetButtonUp(PSMoveButton.Circle)){
 				Debug.Log("Circle UP");
 			}
-
+			float x = 0.0f; 
+			float y = 0.0f; 
+			float z = 0.0f;
 			// Change the colors of the LEDs based on which button has just been pressed:
-			if (move.GetButtonDown(PSMoveButton.Circle))		{moveObj.SetLED(Color.cyan);move.SetLED(Color.cyan);}
-			else if(move.GetButtonDown(PSMoveButton.Cross)) 	{moveObj.SetLED(Color.red);move.SetLED(Color.red);}
-			else if(move.GetButtonDown(PSMoveButton.Square)) 	{moveObj.SetLED(Color.yellow);move.SetLED(Color.yellow);}
-			else if(move.GetButtonDown(PSMoveButton.Triangle)) 	{moveObj.SetLED(Color.magenta);move.SetLED(Color.magenta);}
+			if (move.GetButton(PSMoveButton.Circle)){
+				y = 0.1f * Time.deltaTime * speed;
+			}
+			else if(move.GetButton(PSMoveButton.Cross)){
+				y = -0.1f * Time.deltaTime * speed;
+				//moveObj.SetLED(Color.red);move.SetLED(Color.red);
+			}
+			else if(move.GetButton(PSMoveButton.Square)) 	{
+				x = -0.1f * Time.deltaTime * speed;
+				//moveObj.SetLED(Color.yellow);move.SetLED(Color.yellow);
+			}
+			else if(move.GetButton(PSMoveButton.Triangle)) 	{
+				x = 0.1f * Time.deltaTime * speed;
+				//moveObj.SetLED(Color.magenta);move.SetLED(Color.magenta);
+			}
+			else if (move.GetButtonDown(PSMoveButton.Start)){
+				Debug.Log ("start button");
+				menu = !menu;
+				game_scene.SetActive(!menu);
+				menu_scene.SetActive(menu);
+			}
+			else if(move.GetButtonDown(PSMoveButton.Select)){
+
+			}
+//			if (move.GetButtonDown(PSMoveButton.Circle)){
+//				move.SetLED(Color.red);
+//			}
+//			else if(move.GetButtonDown(PSMoveButton.Cross)){
+//				move.SetLED(Color.blue);
+//			}
+//			else if(move.GetButtonDown(PSMoveButton.Square)) 	{
+//				move.SetLED(Color.magenta);
+//			}
+//			else if(move.GetButtonDown(PSMoveButton.Triangle)) 	{
+//				move.SetLED(Color.green);
+//			}
 
 			// On pressing the move button we reset the orientation as well.
 			// Remember to keep the controller leveled and pointing at the screen
 			// Reset once in a while because of drifting
 			else if(move.GetButtonDown(PSMoveButton.Move)) {
 				move.ResetOrientation();
-				moveObj.SetLED(Color.black);
-				move.SetLED(Color.black);
-			}
+				if(direction == 1.0f)
+					direction = -1.0f;
+				else 
+					direction = 1.0f;
+//				moveObj.SetLED(Color.black);
+//				move.SetLED(Color.black);
 
+			}
+			spaceship.transform.Translate(x, y, z);			
 			// Set the rumble based on how much the trigger is down
-			move.SetRumble(move.Trigger);
+			//move.SetRumble(move.Trigger);
+			Debug.Log (move.Trigger);
 			moveObj.gameObject.transform.localRotation = move.Orientation;
-			spaceship.transform.localRotation = move.Orientation;
+			spaceship.transform.position += spaceship.transform.forward * Time.deltaTime * (direction * 100 * move.Trigger);
+			if(time > 0.1f){
+				time = 0.0f;
+				//spaceship.transform.localRotation = move.Orientation;
+			}
 			i++;
+
 		}
+		//Debug.Log ("time " + time);
 	}
 
 	void HandleControllerDisconnected (object sender, EventArgs e)
@@ -178,4 +232,9 @@ public class UniMoveTest : MonoBehaviour
 
         GUI.Label(new Rect(10, Screen.height-100, 500, 100), display);
     }
+	public void Rumble(){
+		foreach (UniMoveController move in moves) {
+			move.SetRumble (1);
+		}
+	}
 }

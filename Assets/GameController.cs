@@ -11,7 +11,11 @@ public class GameController : MonoBehaviour {
 	private List<Vector3> center_points = new List<Vector3>();
 	private List<Vector3> right_vector = new List<Vector3>();
 	private List<Vector3> up_vector = new List<Vector3> ();
+	public static List<GameObject> gate_list = new List<GameObject>();
+	//Keep track which one is active
+	public static int active_one = 0;
 	public HandController hand;
+	private float time = 0.0f;
 	// Use this for initialization
 	void Start () {
 		//Debug.Log(Load("/Users/margaretwm3/Desktop/CSE165_Project3/Assets/test1.txt"));
@@ -21,9 +25,13 @@ public class GameController : MonoBehaviour {
 			Vector3 up = up_vector[i];
 			Vector3 right = right_vector[i];
 			Vector3 location = center_points[i];
-			location.y = location.y - 2.5f;			
+			//location.y = location.y - 2.5f;			
 			GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, Quaternion.FromToRotation(new Vector3(0,1,0), up));
-
+			gate.GetComponent<GateTrigger>().num = i;
+			gate_list.Add(gate);
+//			foreach (Renderer r in gate.GetComponentsInChildren<Renderer>()){
+//				r.material.color = Color.red;
+//			}
 			//GameObject gate = (GameObject) Instantiate(Gate_Prefab, location,Quaternion.AngleAxis(a, aor));
 		}
 		/*
@@ -37,6 +45,21 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		foreach (Renderer r in gate_list[active_one].GetComponentsInChildren<Renderer>()) {
+			r.material.color = Color.red;
+		}
+		for(int i = 0; i < active_one; i++) {
+			foreach (Renderer r in gate_list[i].GetComponentsInChildren<Renderer>()) {
+				r.material.color = Color.green;
+			}
+		}
+	}
+	void OnGUI()
+	{
+		time += Time.deltaTime;
+		string display = "Running: " + time + "s";
+		
+		GUI.Label(new Rect(10, 0, 500, 100), display);
 	}
 	private bool Load(string fileName)
 	{
@@ -100,4 +123,5 @@ public class GameController : MonoBehaviour {
 			return false;
 		}
 	}
+
 }
