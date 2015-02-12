@@ -10,8 +10,12 @@ public class ArrowControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 to = GameController.gate_list[GameController.active_one].transform.position - spaceship.transform.position;
-		to.Normalize();
-		transform.rotation = Quaternion.FromToRotation(spaceship.transform.forward, to);
+		//Check last one
+		if (GameController.active_one >= GameController.total_num) {
+				} else {
+						Vector3 to = GameController.gate_list [GameController.active_one].transform.position - spaceship.transform.position;
+						to.Normalize ();
+						transform.rotation = Quaternion.FromToRotation (spaceship.transform.forward, to);
+				}
 	}
 }

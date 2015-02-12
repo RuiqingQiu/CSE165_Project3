@@ -33,7 +33,7 @@ public class RiggedHand : HandModel {
     if (palm != null) {
 			//Modify spaceship's position
 	Vector3 position = GetPalmPosition();
-	Debug.Log (position);
+	//Debug.Log (position);
 	//position.Scale(new Vector3(5,5,-5));
 	if(position.y < -2.0){
 		build_mode.renderer.material.color = Color.red;

@@ -14,19 +14,46 @@ public class GameController : MonoBehaviour {
 	public static List<GameObject> gate_list = new List<GameObject>();
 	//Keep track which one is active
 	public static int active_one = 0;
+	public static int total_num = 0;
 	public HandController hand;
 	private float time = 0.0f;
+	//0 for game mode and 1 for build mode
+	public static int Mode = 0;
+	public static bool load_level = false;
 	// Use this for initialization
 	void Start () {
+		//default play mode
+		Mode = 0;
 		//Debug.Log(Load("/Users/margaretwm3/Desktop/CSE165_Project3/Assets/test1.txt"));
-		Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
+		//Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
+		Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/gen_100_1.txt"));
 		//After loading the file, add gate based on the point is at
+		total_num = center_points.Count;
 		for(int i = 0; i < center_points.Count; i++){
 			Vector3 up = up_vector[i];
 			Vector3 right = right_vector[i];
 			Vector3 location = center_points[i];
-			//location.y = location.y - 2.5f;			
-			GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, Quaternion.FromToRotation(new Vector3(0,1,0), up));
+			Debug.Log (location);
+			Debug.Log (up);
+			Debug.Log (right);
+
+//
+//			Vector3 normal = Vector3.Cross(up,right);
+//			Vector3 axis = Vector3.Cross(normal, new Vector3(0,0,1));
+//			double angle = Math.Acos(Vector3.Dot(normal, new Vector3(0,0,1)) / normal.magnitude);
+//			float a = (float)angle;
+//			Quaternion tmp = Quaternion.AngleAxis(a,axis);
+
+
+			//location.y = location.y - 2.5f;	
+			up.Normalize();
+			right.Normalize();
+			Quaternion first = Quaternion.FromToRotation(new Vector3(0,1,0), up);
+			Debug.Log ("first " + first);
+			Quaternion second = Quaternion.FromToRotation(new Vector3(1,0,0), right);
+			Debug.Log ("second " + second);
+
+			GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, first);
 			gate.GetComponent<GateTrigger>().num = i;
 			gate_list.Add(gate);
 //			foreach (Renderer r in gate.GetComponentsInChildren<Renderer>()){
@@ -45,10 +72,55 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		foreach (Renderer r in gate_list[active_one].GetComponentsInChildren<Renderer>()) {
-			r.material.color = Color.red;
+		if (load_level) {
+			Debug.Log ("load new level");
+			for(int i = 0; i < gate_list.Count; i++){
+				Destroy(gate_list[i]);
+			}
+			gate_list.Clear();
+			active_one = 0;
+			Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
+			//After loading the file, add gate based on the point is at
+			total_num = center_points.Count;
+			for(int i = 0; i < center_points.Count; i++){
+				Vector3 up = up_vector[i];
+				Vector3 right = right_vector[i];
+				Vector3 location = center_points[i];
+				Debug.Log (location);
+				Debug.Log (up);
+				Debug.Log (right);
+				
+				//
+				//			Vector3 normal = Vector3.Cross(up,right);
+				//			Vector3 axis = Vector3.Cross(normal, new Vector3(0,0,1));
+				//			double angle = Math.Acos(Vector3.Dot(normal, new Vector3(0,0,1)) / normal.magnitude);
+				//			float a = (float)angle;
+				//			Quaternion tmp = Quaternion.AngleAxis(a,axis);
+				
+				
+				//location.y = location.y - 2.5f;	
+				up.Normalize();
+				right.Normalize();
+				Quaternion first = Quaternion.FromToRotation(new Vector3(0,1,0), up);
+				Debug.Log ("first " + first);
+				Quaternion second = Quaternion.FromToRotation(new Vector3(1,0,0), right);
+				Debug.Log ("second " + second);
+				
+				GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, first);
+				gate.GetComponent<GateTrigger>().num = i;
+				gate_list.Add(gate);
+			}
+			load_level = false;
 		}
-		for(int i = 0; i < active_one; i++) {
+		if (active_one == total_num) {
+			//Game done
+			Debug.Log ("you won");
+		} else {
+						foreach (Renderer r in gate_list[active_one].GetComponentsInChildren<Renderer>()) {
+								r.material.color = Color.red;
+						}
+		}
+		for (int i = 0; i < active_one; i++) {
 			foreach (Renderer r in gate_list[i].GetComponentsInChildren<Renderer>()) {
 				r.material.color = Color.green;
 			}
@@ -58,12 +130,17 @@ public class GameController : MonoBehaviour {
 	{
 		time += Time.deltaTime;
 		string display = "Running: " + time + "s";
+		string score = active_one + " / " + total_num;
 		
 		GUI.Label(new Rect(10, 0, 500, 100), display);
+		GUI.Label(new Rect(20, 10, 500, 100), score);
 	}
 	private bool Load(string fileName)
 	{
 		// Handle any problems that might arise when reading the text
+		center_points.Clear ();
+		right_vector.Clear ();
+		up_vector.Clear ();
 		try
 		{
 			string line;
@@ -91,18 +168,18 @@ public class GameController : MonoBehaviour {
 						string[] entries = line.Split(' ');
 						if (entries.Length > 0){
 							//Add center points to our list
-							center_points.Add(new Vector3(float.Parse(entries[0].Remove(0,2)),
-							                             float.Parse(entries[1].Remove(0,2)),
-							                             float.Parse(entries[2].Remove(0,2))));
+							center_points.Add(new Vector3(float.Parse(entries[0]),
+							                             float.Parse(entries[1]),
+							                             float.Parse(entries[2])));
 							//Add right vector to our list
-							right_vector.Add(new Vector3(float.Parse(entries[3].Remove(0,2)),
-							                             float.Parse(entries[4].Remove(0,2)),
-							                             float.Parse(entries[5].Remove(0,2))));
+							right_vector.Add(new Vector3(float.Parse(entries[3]),
+							                             float.Parse(entries[4]),
+							                             float.Parse(entries[5])));
 
 							//Add up vector to our list
-							up_vector.Add(new Vector3(float.Parse(entries[6].Remove(0,2)),
-							                          float.Parse(entries[7].Remove(0,2)),
-							                          float.Parse(entries[8].Remove(0,2))));
+							up_vector.Add(new Vector3(float.Parse(entries[6]),
+							                          float.Parse(entries[7]),
+							                          float.Parse(entries[8])));
 						}
 					}
 				}

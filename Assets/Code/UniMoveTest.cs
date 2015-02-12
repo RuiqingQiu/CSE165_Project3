@@ -44,6 +44,7 @@ public class UniMoveTest : MonoBehaviour
 	public GameObject game_mode;
 	public GameObject build_mode;
 	public GameObject load_level;
+	public GameObject Gate_Prefab;
 
 	// We save a list of Move controllers.
 	public static List<UniMoveController> moves = new List<UniMoveController>();
@@ -128,49 +129,74 @@ public class UniMoveTest : MonoBehaviour
 	{
 		int i = 0;
 		time += Time.deltaTime;
-		foreach(UniMoveController move in moves)
-		{
+		foreach (UniMoveController move in moves) {
 
-			MoveController moveObj = moveObjs[i];
+			MoveController moveObj = moveObjs [i];
 
 			// Instead of this somewhat kludge-y check, we'd probably want to remove/destroy
-			// the now-defunct controller in the disconnected event handler below.
-			if (move.Disconnected) continue;
 
+			// the now-defunct controller in the disconnected event handler below.
+
+			if (move.Disconnected)
+				continue;
 			// Button events. Works like Unity's Input.GetButton
-			if (move.GetButtonDown(PSMoveButton.Circle)){
-				Debug.Log("Circle Down");
-			}
-			if (move.GetButtonUp(PSMoveButton.Circle)){
-				Debug.Log("Circle UP");
-			}
 			float x = 0.0f; 
 			float y = 0.0f; 
-			float z = 0.0f;
-			// Change the colors of the LEDs based on which button has just been pressed:
-			if (move.GetButton(PSMoveButton.Circle)){
-				y = 0.1f * Time.deltaTime * speed;
-			}
-			else if(move.GetButton(PSMoveButton.Cross)){
-				y = -0.1f * Time.deltaTime * speed;
-				//moveObj.SetLED(Color.red);move.SetLED(Color.red);
-			}
-			else if(move.GetButton(PSMoveButton.Square)) 	{
-				x = -0.1f * Time.deltaTime * speed;
-				//moveObj.SetLED(Color.yellow);move.SetLED(Color.yellow);
-			}
-			else if(move.GetButton(PSMoveButton.Triangle)) 	{
-				x = 0.1f * Time.deltaTime * speed;
-				//moveObj.SetLED(Color.magenta);move.SetLED(Color.magenta);
-			}
-			else if (move.GetButtonDown(PSMoveButton.Start)){
-				Debug.Log ("start button");
+						float z = 0.0f;
+						//Play mode controls
+						if (GameController.Mode == 0){
+						// Change the colors of the LEDs based on which button has just been pressed:
+							if (move.GetButton (PSMoveButton.Circle)) {
+								y = 0.1f * Time.deltaTime * speed;
+
+							} else if (move.GetButton (PSMoveButton.Cross)) {
+								y = -0.1f * Time.deltaTime * speed;
+								//moveObj.SetLED(Color.red);move.SetLED(Color.red);
+							} else if (move.GetButton (PSMoveButton.Square)) {
+
+								x = -0.1f * Time.deltaTime * speed;
+								//moveObj.SetLED(Color.yellow);move.SetLED(Color.yellow);
+							} else if (move.GetButton (PSMoveButton.Triangle)) {
+								x = 0.1f * Time.deltaTime * speed;
+								//moveObj.SetLED(Color.magenta);move.SetLED(Color.magenta);
+							}
+						}
+			//Build mode controls
+						else{
+							//Put down the gate
+							if (move.GetButtonDown (PSMoveButton.Circle)) {
+								
+								GameObject gate = (GameObject) Instantiate(Gate_Prefab, spaceship.transform.position, spaceship.transform.rotation);
+								GameController.gate_list.Add(gate);
+							} 
+							//Save to file
+							else if (move.GetButtonDown (PSMoveButton.Cross)) {
+								using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/output.txt"))
+								{
+									foreach (GameObject a in GameController.gate_list)
+									{
+										file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z);
+									}
+									Debug.Log ("writing done");
+								}
+							} else if (move.GetButtonDown (PSMoveButton.Square)) {
+							} else if (move.GetButtonDown(PSMoveButton.Triangle)) {
+							}
+						}
+			if (move.GetButtonDown(PSMoveButton.Start)){
+				//Debug.Log ("start button");
 				if(menu){
 					if(game_mode.renderer.material.color == Color.green){
 						Debug.Log ("game mode");
+						GameController.Mode = 0;
 					}
 					else if(build_mode.renderer.material.color == Color.green){
 						Debug.Log ("build mode");
+						GameController.Mode = 1;
+					}
+					else if(load_level.renderer.material.color == Color.green){
+						Debug.Log ("load level");
+						GameController.load_level = true;
 					}
 				}
 				menu = !menu;
@@ -197,7 +223,9 @@ public class UniMoveTest : MonoBehaviour
 			// Remember to keep the controller leveled and pointing at the screen
 			// Reset once in a while because of drifting
 			else if(move.GetButtonDown(PSMoveButton.Move)) {
-				move.ResetOrientation();
+				Vector3 to = GameController.gate_list [GameController.active_one].transform.position - spaceship.transform.position;
+				to.Normalize ();
+				spaceship.transform.rotation = Quaternion.FromToRotation (new Vector3(0,0,1), to);
 				if(direction == 1.0f)
 					direction = -1.0f;
 				else 
@@ -209,7 +237,7 @@ public class UniMoveTest : MonoBehaviour
 			spaceship.transform.Translate(x, y, z);			
 			// Set the rumble based on how much the trigger is down
 			//move.SetRumble(move.Trigger);
-			Debug.Log (move.Trigger);
+			//Debug.Log (move.Trigger);
 			moveObj.gameObject.transform.localRotation = move.Orientation;
 			spaceship.transform.position += spaceship.transform.forward * Time.deltaTime * (direction * 100 * move.Trigger);
 			if(time > 0.1f){
