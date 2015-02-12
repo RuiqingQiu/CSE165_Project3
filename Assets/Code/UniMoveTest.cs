@@ -41,6 +41,9 @@ public class UniMoveTest : MonoBehaviour
 	public GameObject spaceship;
 	public GameObject game_scene;
 	public GameObject menu_scene;
+	public GameObject game_mode;
+	public GameObject build_mode;
+	public GameObject load_level;
 
 	// We save a list of Move controllers.
 	public static List<UniMoveController> moves = new List<UniMoveController>();
@@ -51,6 +54,7 @@ public class UniMoveTest : MonoBehaviour
 	private float direction = 1.0f;
 	//Indicating if there's a menu
 	private bool menu = false;
+	public bool set_orientation = false;
 
 
 	void Start()
@@ -161,12 +165,20 @@ public class UniMoveTest : MonoBehaviour
 			}
 			else if (move.GetButtonDown(PSMoveButton.Start)){
 				Debug.Log ("start button");
+				if(menu){
+					if(game_mode.renderer.material.color == Color.green){
+						Debug.Log ("game mode");
+					}
+					else if(build_mode.renderer.material.color == Color.green){
+						Debug.Log ("build mode");
+					}
+				}
 				menu = !menu;
 				game_scene.SetActive(!menu);
 				menu_scene.SetActive(menu);
 			}
 			else if(move.GetButtonDown(PSMoveButton.Select)){
-
+				set_orientation = !set_orientation;
 			}
 //			if (move.GetButtonDown(PSMoveButton.Circle)){
 //				move.SetLED(Color.red);
@@ -202,7 +214,8 @@ public class UniMoveTest : MonoBehaviour
 			spaceship.transform.position += spaceship.transform.forward * Time.deltaTime * (direction * 100 * move.Trigger);
 			if(time > 0.1f){
 				time = 0.0f;
-				//spaceship.transform.localRotation = move.Orientation;
+				if(set_orientation)
+					spaceship.transform.localRotation = move.Orientation;
 			}
 			i++;
 
