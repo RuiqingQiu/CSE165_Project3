@@ -20,13 +20,14 @@ public class GameController : MonoBehaviour {
 	//0 for game mode and 1 for build mode
 	public static int Mode = 0;
 	public static bool load_level = false;
+	public static string file_to_load = "";
 	// Use this for initialization
 	void Start () {
 		//default play mode
 		Mode = 0;
 		//Debug.Log(Load("/Users/margaretwm3/Desktop/CSE165_Project3/Assets/test1.txt"));
 		//Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
-		Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/gen_100_1.txt"));
+		Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/competition_7.txt"));
 		//After loading the file, add gate based on the point is at
 		total_num = center_points.Count;
 		for(int i = 0; i < center_points.Count; i++){
@@ -79,7 +80,8 @@ public class GameController : MonoBehaviour {
 			}
 			gate_list.Clear();
 			active_one = 0;
-			Debug.Log (Load ("/Users/ruiqingqiu/CSE165/Assets/test1.txt"));
+			Debug.Log ("loading file " + file_to_load);
+			Debug.Log (Load (file_to_load));
 			//After loading the file, add gate based on the point is at
 			total_num = center_points.Count;
 			for(int i = 0; i < center_points.Count; i++){

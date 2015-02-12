@@ -16,7 +16,15 @@ public class RiggedHand : HandModel {
 	public GameObject game_mode;
 	public GameObject build_mode;
 	public GameObject load_level;
-  public Transform foreArm;
+
+	public GameObject file1;
+	public GameObject file2;
+	public GameObject file3;
+	public GameObject load1;
+	public GameObject load2;
+	public GameObject load3;
+
+	public Transform foreArm;
 
   public Vector3 modelFingerPointing = Vector3.forward;
   public Vector3 modelPalmFacing = -Vector3.up;
@@ -39,18 +47,36 @@ public class RiggedHand : HandModel {
 		build_mode.renderer.material.color = Color.red;
 		game_mode.renderer.material.color = Color.green;
 		load_level.renderer.material.color = Color.red;
-
-	}
+				file2.renderer.material.color = Color.red;
+				file1.renderer.material.color = Color.green;
+				file3.renderer.material.color = Color.red;
+				load2.renderer.material.color = Color.red;
+				load1.renderer.material.color = Color.green;
+				load3.renderer.material.color = Color.red;
+		}
 	else if(position.y < -1.0){
 				game_mode.renderer.material.color = Color.red;
 				build_mode.renderer.material.color = Color.green;
 				load_level.renderer.material.color = Color.red;
+				file1.renderer.material.color = Color.red;
+				file2.renderer.material.color = Color.green;
+				file3.renderer.material.color = Color.red;
 
+				load1.renderer.material.color = Color.red;
+				load2.renderer.material.color = Color.green;
+				load3.renderer.material.color = Color.red;
 	}
 	else if(position.y < 0.0){
 				game_mode.renderer.material.color = Color.red;
 				build_mode.renderer.material.color = Color.red;
 				load_level.renderer.material.color = Color.green;
+				file1.renderer.material.color = Color.red;
+				file2.renderer.material.color = Color.red;
+				file3.renderer.material.color = Color.green;
+				load1.renderer.material.color = Color.red;
+				load2.renderer.material.color = Color.red;
+				load3.renderer.material.color = Color.green;
+
 
 	}
 

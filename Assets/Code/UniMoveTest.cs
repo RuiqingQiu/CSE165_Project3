@@ -41,10 +41,24 @@ public class UniMoveTest : MonoBehaviour
 	public GameObject spaceship;
 	public GameObject game_scene;
 	public GameObject menu_scene;
+	public GameObject save_file_scene;
+	public GameObject load_file_scene;
+
 	public GameObject game_mode;
 	public GameObject build_mode;
 	public GameObject load_level;
 	public GameObject Gate_Prefab;
+
+	public GameObject file1;
+	public GameObject file2;
+	public GameObject file3;
+
+	public GameObject load1;
+	public GameObject load2;
+	public GameObject load3;
+
+
+
 
 	// We save a list of Move controllers.
 	public static List<UniMoveController> moves = new List<UniMoveController>();
@@ -56,7 +70,8 @@ public class UniMoveTest : MonoBehaviour
 	//Indicating if there's a menu
 	private bool menu = false;
 	public bool set_orientation = false;
-
+	public bool save_file_scene_active = false;
+	public bool load_file_scene_active = false;
 
 	void Start()
 	{
@@ -171,13 +186,44 @@ public class UniMoveTest : MonoBehaviour
 							} 
 							//Save to file
 							else if (move.GetButtonDown (PSMoveButton.Cross)) {
-								using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/output.txt"))
-								{
-									foreach (GameObject a in GameController.gate_list)
-									{
-										file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z);
+								save_file_scene_active = !save_file_scene_active;
+								save_file_scene.SetActive(save_file_scene_active);
+								game_scene.SetActive(!save_file_scene_active);
+					                     if(!save_file_scene_active){
+									if(file1.renderer.material.color == Color.green){
+										using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/file1.txt"))
+										{
+											foreach (GameObject a in GameController.gate_list)
+											{
+												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
+									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+									               
+											}
+											Debug.Log ("writing done");
+										}
 									}
-									Debug.Log ("writing done");
+									else if(file2.renderer.material.color == Color.green){
+										using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/file2.txt"))
+										{
+											foreach (GameObject a in GameController.gate_list)
+											{
+												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
+									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+											}
+											Debug.Log ("writing done");
+										}
+									}
+									else if(file3.renderer.material.color == Color.green){
+										using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/file3.txt"))
+										{
+											foreach (GameObject a in GameController.gate_list)
+											{
+												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
+									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+											}
+											Debug.Log ("writing done");
+										}
+									}	
 								}
 							} else if (move.GetButtonDown (PSMoveButton.Square)) {
 							} else if (move.GetButtonDown(PSMoveButton.Triangle)) {
@@ -185,6 +231,21 @@ public class UniMoveTest : MonoBehaviour
 						}
 			if (move.GetButtonDown(PSMoveButton.Start)){
 				//Debug.Log ("start button");
+				if(load_file_scene_active){
+					if(load1.renderer.material.color == Color.green){
+						GameController.file_to_load = "/Users/ruiqingqiu/CSE165/Assets/file1.txt";
+						GameController.load_level = true;
+					}
+					else if(load2.renderer.material.color == Color.green){
+						GameController.file_to_load = "/Users/ruiqingqiu/CSE165/Assets/file2.txt";
+						GameController.load_level = true;
+					}
+					else if(load3.renderer.material.color == Color.green){
+						GameController.file_to_load = "/Users/ruiqingqiu/CSE165/Assets/file3.txt";
+						GameController.load_level = true;
+					}
+					load_file_scene_active = false;
+				}
 				if(menu){
 					if(game_mode.renderer.material.color == Color.green){
 						Debug.Log ("game mode");
@@ -196,12 +257,20 @@ public class UniMoveTest : MonoBehaviour
 					}
 					else if(load_level.renderer.material.color == Color.green){
 						Debug.Log ("load level");
-						GameController.load_level = true;
+						load_file_scene_active = true;
+						load_file_scene.SetActive(load_file_scene_active);
+						//GameController.load_level = true;
 					}
 				}
-				menu = !menu;
-				game_scene.SetActive(!menu);
-				menu_scene.SetActive(menu);
+				if(load_file_scene_active){
+					//Disable main menu
+					menu_scene.SetActive(false);
+				}
+				else{
+					menu = !menu;
+					game_scene.SetActive(!menu);
+					menu_scene.SetActive(menu);
+				}
 			}
 			else if(move.GetButtonDown(PSMoveButton.Select)){
 				set_orientation = !set_orientation;
@@ -239,6 +308,13 @@ public class UniMoveTest : MonoBehaviour
 			//move.SetRumble(move.Trigger);
 			//Debug.Log (move.Trigger);
 			moveObj.gameObject.transform.localRotation = move.Orientation;
+//			if(move.Trigger == 0.0f){
+//				spaceship.GetComponentInChildren<ParticleSystem>().Stop();
+//			}
+//			else{
+//
+//				spaceship.GetComponentInChildren<ParticleSystem>().Play();
+//			}
 			spaceship.transform.position += spaceship.transform.forward * Time.deltaTime * (direction * 100 * move.Trigger);
 			if(time > 0.1f){
 				time = 0.0f;
