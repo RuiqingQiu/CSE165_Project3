@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour {
 	public static int Mode = 0;
 	public static bool load_level = false;
 	public static string file_to_load = "";
+	public GameObject spaceship;
 	// Use this for initialization
 	void Start () {
 		//default play mode
@@ -49,32 +50,21 @@ public class GameController : MonoBehaviour {
 			//location.y = location.y - 2.5f;	
 			up.Normalize();
 			right.Normalize();
-			Quaternion first = Quaternion.FromToRotation(new Vector3(0,1,0), up);
-			Debug.Log ("first " + first);
-			Quaternion second = Quaternion.FromToRotation(new Vector3(1,0,0), right);
-			Debug.Log ("second " + second);
+			Quaternion rotation = new Quaternion();
+			rotation.SetFromToRotation(new Vector3(0,0,1), Vector3.Cross(up,right));
 
-			GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, first);
+			GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, rotation);
 			gate.GetComponent<GateTrigger>().num = i;
 			gate_list.Add(gate);
-//			foreach (Renderer r in gate.GetComponentsInChildren<Renderer>()){
-//				r.material.color = Color.red;
-//			}
-			//GameObject gate = (GameObject) Instantiate(Gate_Prefab, location,Quaternion.AngleAxis(a, aor));
 		}
-		/*
-		for (var y = 0; y < gridY; y++) {
-			for (var x=0;x<gridX;x++) {
-				var pos = Vector3 (x, 0, y) * spacing;
-				Instantiate(prefab, pos, Quaternion.identity);
-			}
-		}*/
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		//Debug.Log (load_level);
 		if (load_level) {
 			Debug.Log ("load new level");
+			spaceship.transform.position = new Vector3(0,0,0);
 			for(int i = 0; i < gate_list.Count; i++){
 				Destroy(gate_list[i]);
 			}
@@ -88,31 +78,18 @@ public class GameController : MonoBehaviour {
 				Vector3 up = up_vector[i];
 				Vector3 right = right_vector[i];
 				Vector3 location = center_points[i];
-				Debug.Log (location);
-				Debug.Log (up);
-				Debug.Log (right);
-				
-				//
-				//			Vector3 normal = Vector3.Cross(up,right);
-				//			Vector3 axis = Vector3.Cross(normal, new Vector3(0,0,1));
-				//			double angle = Math.Acos(Vector3.Dot(normal, new Vector3(0,0,1)) / normal.magnitude);
-				//			float a = (float)angle;
-				//			Quaternion tmp = Quaternion.AngleAxis(a,axis);
-				
-				
-				//location.y = location.y - 2.5f;	
+
 				up.Normalize();
 				right.Normalize();
-				Quaternion first = Quaternion.FromToRotation(new Vector3(0,1,0), up);
-				Debug.Log ("first " + first);
-				Quaternion second = Quaternion.FromToRotation(new Vector3(1,0,0), right);
-				Debug.Log ("second " + second);
+				Quaternion rotation = new Quaternion();
+				rotation.SetFromToRotation(new Vector3(0,0,1), Vector3.Cross(up,right));
 				
-				GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, first);
+				GameObject gate = (GameObject) Instantiate(Gate_Prefab, location, rotation);
 				gate.GetComponent<GateTrigger>().num = i;
 				gate_list.Add(gate);
 			}
 			load_level = false;
+			//Mode = 0;
 		}
 		if (active_one == total_num) {
 			//Game done
@@ -132,10 +109,12 @@ public class GameController : MonoBehaviour {
 	{
 		time += Time.deltaTime;
 		string display = "Running: " + time + "s";
-		string score = active_one + " / " + total_num;
+		string score = "Gates: " + active_one + " / " + total_num;
+		string current_mode = "Game Mode is: " + Mode; 
 		
 		GUI.Label(new Rect(10, 0, 500, 100), display);
-		GUI.Label(new Rect(20, 10, 500, 100), score);
+		GUI.Label(new Rect(20, 15, 500, 100), score);
+		GUI.Label (new Rect (20, 30, 500, 100), current_mode);
 	}
 	private bool Load(string fileName)
 	{

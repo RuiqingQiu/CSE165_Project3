@@ -56,6 +56,7 @@ public class UniMoveTest : MonoBehaviour
 	public GameObject load1;
 	public GameObject load2;
 	public GameObject load3;
+	public GameObject load4;
 
 
 
@@ -182,6 +183,7 @@ public class UniMoveTest : MonoBehaviour
 							if (move.GetButtonDown (PSMoveButton.Circle)) {
 								
 								GameObject gate = (GameObject) Instantiate(Gate_Prefab, spaceship.transform.position, spaceship.transform.rotation);
+								gate.GetComponent<GateTrigger>().num = GameController.gate_list.Count;
 								GameController.gate_list.Add(gate);
 							} 
 							//Save to file
@@ -193,13 +195,16 @@ public class UniMoveTest : MonoBehaviour
 									if(file1.renderer.material.color == Color.green){
 										using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"/Users/ruiqingqiu/CSE165/Assets/file1.txt"))
 										{
+											
 											foreach (GameObject a in GameController.gate_list)
 											{
+									Vector3 new_right = a.transform.TransformDirection(new Vector3(1,0,0));
+									Vector3 new_up = a.transform.TransformDirection(new Vector3(0,1,0));
 												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
-									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+									               + " " + new_right.x + " " + new_right.y + " " + new_right.z + " " + new_up.x + " " + new_up.y + " " + new_up.z);
 									               
 											}
-											Debug.Log ("writing done");
+											Debug.Log ("writing file1 done");
 										}
 									}
 									else if(file2.renderer.material.color == Color.green){
@@ -207,10 +212,13 @@ public class UniMoveTest : MonoBehaviour
 										{
 											foreach (GameObject a in GameController.gate_list)
 											{
+
+									Vector3 new_right = a.transform.TransformDirection(new Vector3(1,0,0));
+									Vector3 new_up = a.transform.TransformDirection(new Vector3(0,1,0));
 												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
-									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+									               + " " + new_right.x + " " + new_right.y + " " + new_right.z + " " + new_up.x + " " + new_up.y + " " + new_up.z);
 											}
-											Debug.Log ("writing done");
+											Debug.Log ("writing file2 done");
 										}
 									}
 									else if(file3.renderer.material.color == Color.green){
@@ -218,10 +226,12 @@ public class UniMoveTest : MonoBehaviour
 										{
 											foreach (GameObject a in GameController.gate_list)
 											{
+									Vector3 new_right = a.transform.TransformDirection(new Vector3(1,0,0));
+									Vector3 new_up = a.transform.TransformDirection(new Vector3(0,1,0));
 												file.WriteLine(a.transform.position.x + " " + a.transform.position.y + " " + a.transform.position.z
-									               + " " + "1.0" + " " + "0.0" + " " + "0.0" + " " + "0.0" + " " + "1.0" + " " + "0.0");
+									               + " " + new_right.x + " " + new_right.y + " " + new_right.z + " " + new_up.x + " " + new_up.y + " " + new_up.z);
 											}
-											Debug.Log ("writing done");
+											Debug.Log ("writing file3 done");
 										}
 									}	
 								}
@@ -232,6 +242,7 @@ public class UniMoveTest : MonoBehaviour
 			if (move.GetButtonDown(PSMoveButton.Start)){
 				//Debug.Log ("start button");
 				if(load_file_scene_active){
+					load_level.renderer.material.color = Color.red;
 					if(load1.renderer.material.color == Color.green){
 						GameController.file_to_load = "/Users/ruiqingqiu/CSE165/Assets/file1.txt";
 						GameController.load_level = true;
@@ -245,6 +256,7 @@ public class UniMoveTest : MonoBehaviour
 						GameController.load_level = true;
 					}
 					load_file_scene_active = false;
+					load_file_scene.SetActive(load_file_scene_active);
 				}
 				if(menu){
 					if(game_mode.renderer.material.color == Color.green){

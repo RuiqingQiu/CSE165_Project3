@@ -23,7 +23,7 @@ public class RiggedHand : HandModel {
 	public GameObject load1;
 	public GameObject load2;
 	public GameObject load3;
-
+	public GameObject load4;
 	public Transform foreArm;
 
   public Vector3 modelFingerPointing = Vector3.forward;
@@ -50,10 +50,11 @@ public class RiggedHand : HandModel {
 				file2.renderer.material.color = Color.red;
 				file1.renderer.material.color = Color.green;
 				file3.renderer.material.color = Color.red;
-				load2.renderer.material.color = Color.red;
 				load1.renderer.material.color = Color.green;
+				load2.renderer.material.color = Color.red;
 				load3.renderer.material.color = Color.red;
-		}
+
+			}
 	else if(position.y < -1.0){
 				game_mode.renderer.material.color = Color.red;
 				build_mode.renderer.material.color = Color.green;
@@ -61,12 +62,12 @@ public class RiggedHand : HandModel {
 				file1.renderer.material.color = Color.red;
 				file2.renderer.material.color = Color.green;
 				file3.renderer.material.color = Color.red;
-
 				load1.renderer.material.color = Color.red;
 				load2.renderer.material.color = Color.green;
 				load3.renderer.material.color = Color.red;
-	}
-	else if(position.y < 0.0){
+
+			}
+			else if(position.y < 0.0){
 				game_mode.renderer.material.color = Color.red;
 				build_mode.renderer.material.color = Color.red;
 				load_level.renderer.material.color = Color.green;
@@ -77,8 +78,7 @@ public class RiggedHand : HandModel {
 				load2.renderer.material.color = Color.red;
 				load3.renderer.material.color = Color.green;
 
-
-	}
+			}
 
 	//spaceship.transform.position += (Vector3.forward + position) * Time.deltaTime ;
      palm.position = new Vector3(0,-300,0);
